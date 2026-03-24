@@ -4,12 +4,23 @@ import asyncio
 from aiogram.filters import Filter
 from aiogram.types import Message, ContentType
 from aiogram import Bot
-from src.misc import bot,CHANNEL_ID,LOG_CHANNEL_LINK, LOG_CHANNEL_ID, REFERR_REWARD_RARE, REREFERR_REWARD_RATE
+from src.misc import bot,CHANNEL_ID,LOG_CHANNEL_LINK, LOG_CHANNEL_ID
 from src.methods.database.users_manager import UsersDatabase
 from src.methods.database.config_manager import ConfigDatabase
 from loguru import logger
 
 
+async def get_or_set_photo_id(key: str, file_path: str, message: Message):
+    photo_id = await ConfigDatabase.get_value(key)
+
+    if photo_id:
+        return photo_id
+
+    msg = await message.answer_photo(photo=file_path)
+    photo_id = msg.photo[-1].file_id
+
+    await ConfigDatabase.set_value(key, photo_id)
+    return photo_id
 
 def get_file_id(message: Message, file_type: str) -> str:
     """Проверка основного сообщения"""
@@ -35,37 +46,7 @@ def is_valid_email(email):
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return re.match(pattern, email)
 
-async def process_referral(user_id: int, level: int = 1):
-    """Обрабатывает рефералку на любом уровне"""
-    bonus_levels = {1: REFERR_REWARD_RARE, 2: REREFERR_REWARD_RATE}  # Можно добавить больше уровней
-    referral_field = "referrals" if level == 1 else "rereferrals"
-    amount = bonus_levels.get(level, 0)  # Если уровень больше 2, начисления нет
 
-    if amount > 0:
-        await UsersDatabase.refer(user_id=user_id, amount=amount, **{referral_field: 1})
-
-    # Получаем данные о пользователе
-    data = await UsersDatabase.get_user(user_id)
-    balance, referrals, rereferrals, username, referrer = data[3], data[5], data[6], data[7], data[4]
-
-    # Формируем сообщение
-    message = f"""🎉 {"Alguien se registró en el bot usando su enlace" if level == 1 else "Alguien se registró en el bot utilizando el enlace de tu amigo"} 🎉
-
-<b>+ {amount} Pesos</b> 💰 
-
-📢 Has invitado a: <b>{referrals} usuarios</b>
-📣 Tus amigos han invitado a: <b>{rereferrals} usuarios</b>
-💸 Su saldo: <b>{balance} Pesos</b>"""
-
-    # Отправляем сообщение пользователю
-    try:
-        await bot.send_message(user_id, message, parse_mode="HTML")
-    except:
-        logger.error(f'@{username}({user_id}) didn\'t receive the message')
-
-    # Рекурсивно начисляем бонусы рефереру
-    if referrer and level < len(bonus_levels):
-        await process_referral(referrer, level + 1)
 
 
 
@@ -111,29 +92,39 @@ async def send_ad_message(user_id, message: Message):
         logger.error(f"Ошибка при отправке {user_id}: {e}")
         return False
 
-async def handle_send_ad(message: Message, admin:int):
-    """ Основная функция рассылки рекламы """
+async def handle_send_ad(message: Message, admin: int):
     state = await ConfigDatabase.get_value("ad_state")
     users = {
         "all": await UsersDatabase.get_all(),
         "test": [[admin]],
         "admins": await UsersDatabase.get_all_admins()
     }.get(state, [])
+
     sent_count = 0
+
     for user in users:
-        success = await send_ad_message(user[0], message)  # Ждем завершения отправки
-        await asyncio.sleep(1)  # Пауза между отправками
-        if success:
-            sent_count += 1
-    admin_name = await UsersDatabase.get_value(admin,'username')
+        try:
+            success = await send_ad_message(user[0], message)
+            if success:
+                sent_count += 1
+        except Exception:
+            pass
+
+        await asyncio.sleep(0.04)
+
+    admin_name = await UsersDatabase.get_value(admin, 'username')
     msg = f"📢 Messages sent: <b>{sent_count}</b>\nSender: @{admin_name} {admin}\nstate: <b>{state}<b>"
-    await bot.send_message(LOG_CHANNEL_ID, msg, parse_mode="HTML", disable_notification=True)
+
+    if LOG_CHANNEL_ID:
+        try:
+            await bot.send_message(
+                int(LOG_CHANNEL_ID),
+                msg,
+                parse_mode="HTML",
+                disable_notification=True
+            )
+        except Exception as e:
+            logger.warning(f"LOG_CHANNEL_ID error: {e}")
+
     logger.success(msg)
 
-
-async def time_view(update_limit, time_now):
-    remaining_timedelta = update_limit - time_now  # Уже timedelta
-
-    # Форматируем оставшееся время в часы:минуты:секунды
-    formatted_remaining_time = str(remaining_timedelta).split('.')[0]  # Убираем миллисекунды
-    return formatted_remaining_time

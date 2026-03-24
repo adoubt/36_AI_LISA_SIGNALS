@@ -3,7 +3,7 @@ from aiogram.types import Message, CallbackQuery
 
 from loguru import logger
 from src.misc import bot, bot_id, CHANNEL_LINK,LOG_CHANNEL_ID
-from src.methods.utils import process_referral, is_user_subscribed
+from src.methods.utils import  is_user_subscribed
 from src.keyboards import user_keyboards
 # def new_seller_handler(function):
 #     async def _new_seller_handler(*args, **kwargs):
@@ -22,32 +22,41 @@ def new_user_handler(function):
         message: Message = args[0]
         user_id = message.from_user.id
         
-        # username = message.
         if (await UsersDatabase.get_user(user_id)) == -1:
-            username =message.from_user.username
+            username = message.from_user.username
             language = message.from_user.language_code
             referr = message.text.split()[1] if len(message.text.split()) > 1 else None
             
-            
-            await UsersDatabase.create_user(user_id=user_id,username=username,language=language,referr=referr)
-            if referr and (await UsersDatabase.get_user(referr)!= -1): 
+            await UsersDatabase.create_user(
+                user_id=user_id,
+                username=username,
+                language=language,
+                referr=referr
+            )
+
+            if referr and (await UsersDatabase.get_user(referr) != -1): 
                 await process_referral(referr)
-                referr_username = await UsersDatabase.get_value(referr,'username')
+                referr_username = await UsersDatabase.get_value(referr, 'username')
                 msg = f"👤 @{username} {user_id} from @{referr_username} {referr}"
             else: 
                 msg = f"👤 @{username} {user_id}"
-            await bot.send_message(LOG_CHANNEL_ID, text = msg,disable_notification =True)
+
+            # защита от None + любых ошибок отправки
+            if LOG_CHANNEL_ID:
+                try:
+                    await bot.send_message(
+                        int(LOG_CHANNEL_ID),
+                        text=msg,
+                        disable_notification=True
+                    )
+                except Exception as e:
+                    logger.warning(f"LOG_CHANNEL_ID error: {e}")
+
             logger.success(f"Новый пользователь (ID: {user_id} username {username})")
+
             if user_id == int(bot_id):
-
-                await UsersDatabase.set_value(user_id,'is_admin',1)
-                #назначение бота админом для кнопок в админке(костыль, вроде пофикшен)
+                await UsersDatabase.set_value(user_id, 'is_admin', 1)
                 logger.info(f'[Admin] {user_id} получил права админа')
-            # else:
-                # await message.answer(
-                # "👋 Привет, вижу ты новенький. Будем знакомы, чтобы получить список моих команд напиши <code>/help</code>",
-                # parse_mode="HTML")
-
 
         return await function(*args, **kwargs)
 
@@ -78,7 +87,7 @@ def is_admin(function):
         user_id = message.from_user.id
         if await UsersDatabase.is_admin(user_id) or user_id == int(bot_id):
             return await function(*args, **kwargs)
-        await message.answer('You don\'t have admin rights')
+        # await message.answer('You don\'t have admin rights')
         return
 
     return _is_admin

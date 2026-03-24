@@ -1,71 +1,38 @@
 LOCALES = {
-    "start": """Nuestra empresa tiene un acuerdo con una agencia de publicidad para promocionar un vídeo en TikTok 📈
- 
-Por lo tanto, estamos dispuestos a pagar a cada usuario por ver vídeos cortos subidos por este bot.
- 
-⚠️ Tienes que ver los vídeos para ser recompensado. Los vídeos duran entre 10 y 15 segundos
- 
-💰 Puedes ganar hasta <b>15.000 Pesos</b> diariamente viendo vídeos
- 
-Para empezar, pulse el botón "<b>Ver vídeos y ganar dinero</b> 📺".""",
-    "videos": """Nuestra empresa tiene un contrato con una agencia de publicidad que necesita promocionar vídeos en TikTok 📈
+    "start": """➡️ TRADEGEN AI  TRADING RULES — PLEASE READ CAREFULLY
 
-Por lo tanto, estamos dispuestos a pagar a cada uno de nuestros usuarios por ver vídeos cortos enviados por este bot.
- 
-⚠️ Tienes que ver el vídeo hasta el final para conseguir la recompensa. La duración del vídeo es de 10-15 segundos.
- 
-💰 Cada día puedes ganar hasta <b>15.000 Pesos</b> viendo vídeos
- 
-Pulse el botón "<b>Empezar a ver</b> 📺" para comenzar.""",
-    "channel": """Únete a nuestro canal y te enseñaremos a ganar dinero!""",
-    "rules": """Nuestra empresa tiene un acuerdo con una agencia de publicidad para promocionar un vídeo en TikTok 📈
- 
-Por lo tanto, estamos dispuestos a pagar a cada usuario por ver vídeos cortos subidos por este bot.
- 
-⚠️ Tienes que ver los vídeos para ser recompensado. Los vídeos duran entre 10 y 15 segundos
- 
-💰 Puedes ganar hasta <b>15.000 Pesos</b> diariamente viendo vídeos
- 
-Para empezar, pulse el botón "<b>Ver vídeos y ganar dinero</b> 📺".""",
-    "profile": """Su saldo: <b>{balance} Pesos</b>
-Número de amigos invitados: <b>{referrals}</b>
-Usuarios invitados por tus amigos: <b>{rereferrals}</b>""",
-    "withdraw_requested": """Ya tiene una solicitud de retirada activa.  Por favor, espere a que se procese.""",
-    "withdraw_problems": """Desafortunadamente, experimentamos problemas técnicos, ¡nos disculpamos!
-Su dinero será acreditado a su cuenta dentro de las 72 horas""",
-    "withdraw_videos_threshold": """❗️ Debes ver al menos <b>5</b> vídeos para retirar fondos.
+To achieve maximum performance from the signals, proper risk management and discipline are essential.
 
-Haz clic en <b>Empezar a ver</b> 📺 y empieza ya.""",
-    "withdraw_balance_threshold": """El saldo mínimo para retirar es  <b>75.000 Pesos</b>
+1️⃣Risk no more than 5% of your deposit per trade.
+Trading is a long-term game. The algorithm does not provide 100% winning trades, but with proper money management, profitability is achieved over time.
 
-Su saldo:  <b>{balance} Pesos</b>
+2️⃣Do not enter a signal 15–30 minutes after it was published.
+Each entry is designed for a specific market window. Late entry may mean a different market structure.
 
-Lamentablemente, este límite tuvo que fijarse para no sobrecargar el sistema con retiradas de pequeñas cantidades.""",
-    "earn_more": """Nuestro proyecto es nuevo en telegram y necesitamos que todo el mundo nos conozca, por lo que estamos dispuestos a pagar por la publicidad 💵
- 
-🏆 Esta es tu link de enlace para las invitaciones 👇
+3️⃣No martingale and no duplicate trades.
+TRADEGEN AI operates through a structured algorithm. It is not designed for aggressive deposit boosting.
 
- <a href="{link}">{link}</a>
+4️⃣ Do not interfere with the trade unnecessarily.
+All required parameters are already included in the signal. Extra actions increase risk.""",
 
- 
-✅ Copia el enlace y envíalo a tus amigos y conocidos
- 
-🏆 Por cada persona que visite el bot a través de tu enlace, obtienes <b>1500 Pesos</b>
- 
-Si alguien a quien invitas invita a nuevas personas, te pagan por usuario <b>750 Pesos</b>  
- 
-Así que puedes ganar sin límites!""",
-    "card_number": """💳 Envíame los datos de tu cuenta <b>%PAYMENTOS%</b> de la que deseas retirar tus saldos""",
-    "receive": """🎉 Has ganado  <b>{REWARD_RATE} Pesos</b> por ver el vídeo.
 
-🤑 Su saldo:  <b>{new_balance} Pesos</b>""",
-    
-    "receive_abort_early": """⚠️Tienes que ver el vídeo en su totalidad⚠️""",
-    "receive_abort_period": """⚠️ Hoy has cumplido con todos tus compromisos publicitarios y has recibido un premio! 😌
+    "start2":"""...We developed an algorithm that analyzes the market without emotions, fatigue, or human bias.
 
-Puedes conseguir un nuevo contrato de publicidad durante: <b>{time_left}</b>
+It doesn't rush, doesn't guess, and doesn't chase "beautiful" trades.
+The system reads market structure, evaluates volume and liquidity flows, and identifies entry points the way an experienced professional would 🧠📊
 
-Si quieres ganar más, haz clic en el botón de abajo 👇""",
+This is pure logic and structured analysis — no impulsive decisions""",
+
+
+    "start3":"""🤖 <b>EXCELLENT, ACTIVATED SUCCESSFULLY</b>
+
+📊 You're now connected to receive trading signals 
+
+🚀 Stay tuned and don't miss the first entry points 
+
+‼️<b>Please don't turn off notifications</b>""",
+
+
     "set_admin_empty": """❌ Empty request.
 Example: `/set_admin durov`
 !Username must be registered here!""",

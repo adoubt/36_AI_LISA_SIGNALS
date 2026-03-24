@@ -1,6 +1,6 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import KeyboardButton, ReplyKeyboardRemove, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from typing import Any
-from src.misc import CHANNEL_LINK,WATCHED_VIDEOS_THRESHOLD
+from src.misc import CHANNEL_LINK
 
 
 def get_subscription_kb(link) -> InlineKeyboardMarkup:
@@ -11,7 +11,8 @@ def get_subscription_kb(link) -> InlineKeyboardMarkup:
 
     return ikb
 
-
+def remove() -> ReplyKeyboardRemove:
+    return ReplyKeyboardRemove()
 def get_start_kb(requested:int) -> ReplyKeyboardMarkup:
     buttons = [
         [KeyboardButton(text='Ver vídeos y ganar dinero 📺')],
@@ -26,10 +27,10 @@ def get_start_kb(requested:int) -> ReplyKeyboardMarkup:
 
 def get_admin_kb() -> ReplyKeyboardMarkup:
     buttons = [
-        [KeyboardButton(text='/ad')],
-        [KeyboardButton(text='/set_admin'), KeyboardButton(text='/stats')],
-        [KeyboardButton(text='/all_videos'), KeyboardButton(text='/start')]    
-    ]
+        [KeyboardButton(text='/ad'),
+        KeyboardButton(text='/stats')], [KeyboardButton(text='/admin'),
+         KeyboardButton(text='/start')] ]
+    
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
 def get_ad_kb(state: str) -> InlineKeyboardMarkup:
