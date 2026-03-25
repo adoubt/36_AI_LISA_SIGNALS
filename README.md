@@ -1,7 +1,7 @@
 Вот полный, готовый к вставке Markdown для README, минималистичный и полностью ориентированный на Ubuntu:
 
 ````markdown
-# earnbot2
+# LISA SIGNALS BOT
 
 ## Быстрый старт на Ubuntu
 
