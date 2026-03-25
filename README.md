@@ -1,35 +1,105 @@
+Вот полный, готовый к вставке Markdown для README, минималистичный и полностью ориентированный на Ubuntu:
 
+````markdown
 # earnbot2
 
-## Быстрый старт
+## Быстрый старт на Ubuntu
 
-1. Добавить бота админом в рекламный канал и канал для логов  
-2. Положить `.env` в корень проекта (для `src/misc.py`)  
-3. Запустить в Telegram команду `/start`  
-4. Авторизоваться: `/admin_{PASSWORD}`  
-5. Открыть админку: `/admin`  
-6. Загружать видео пачкой
+1. Подключиться к серверу через SSH.
+2. Установить Python и Git:
+```bash
+sudo apt update
+sudo apt install python3 python3-venv python3-pip git -y
+````
 
----
+3. Создать папку для бота и перейти в неё:
 
-## Развёртывание на новом сервере
+```bash
+mkdir ~/bot
+cd ~/bot
+```
 
-1. Подключиться к серверу  
-2. Установить Python и Git  
-3. Клонировать репозиторий  
-4. Перейти в папку проекта  
-5. Установить зависимости в виртуальное окружение  
-6. Добавить `.env` файл
+4. Клонировать репозиторий:
 
----
+```bash
+git clone https://github.com/adoubt/36_AI_LISA_SIGNALS.git .
+```
 
-## Перезапуск бота
+5. Создать виртуальное окружение и активировать его:
 
-1. Открыть PowerShell  
-2. `cd C:\bot_project\`  
-3. `.\venv\Scripts\Activate`  
-4. `Start-Process powershell -ArgumentList "-NoExit", "-Command", "& { .\venv\Scripts\Activate; python .\main.py }"`  
-5. Проверить работу бота  
-6. Закрыть RDP
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
+6. Установить зависимости:
 
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+7. Создать файл `.env` в корне папки бота с содержимым:
+
+```env
+PASSWORD=любой_пароль_для_админа
+BOT_TOKEN=токен_бота
+```
+
+8. Запустить бота на фоне:
+
+```bash
+screen -S earnbot
+python3 main.py
+# Ctrl+A, D — отсоединиться, бот будет работать в фоне
+```
+
+## Обновление бота
+
+1. Перейти в папку бота:
+
+```bash
+cd ~/bot
+```
+
+2. Остановить бота:
+
+```bash
+screen -r earnbot   # вернуться к сессии
+Ctrl+C               # остановить процесс
+```
+
+3. Обновить репозиторий:
+
+```bash
+git pull
+```
+
+4. При необходимости обновить зависимости:
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+5. Запустить бота снова:
+
+```bash
+screen -S earnbot
+python3 main.py
+```
+
+## Вход в админку
+
+Использовать команду в Telegram:
+
+```text
+/admin_hochu<ПАРОЛЬ>
+```
+
+слитно, без пробелов.
+
+```
+
+Этот Markdown можно полностью скопировать в `README.md`. Он убирает всё лишнее про Windows, PowerShell, RDP и ненужные шаги, оставляя только Ubuntu и командную работу на сервере.
+```
