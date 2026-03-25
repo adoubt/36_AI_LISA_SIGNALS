@@ -280,6 +280,8 @@ async def handle_post(message: Message, state: FSMContext, **kwargs):
 @new_user_handler
 @is_not_banned
 async def fallback_handler(message: Message, **kwargs):
+    if getattr(message, "pinned_message", None):
+        return
     await message.answer("Unrecognized text, this bot provides signals and information in real time. It does not communicate with you.")
 
 
