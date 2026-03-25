@@ -27,9 +27,9 @@ def get_start_kb(requested:int) -> ReplyKeyboardMarkup:
 
 def get_admin_kb() -> ReplyKeyboardMarkup:
     buttons = [
-        [KeyboardButton(text='/send_post'),KeyboardButton(text='/mode'),KeyboardButton(text='/redakt_post'),]
-        [KeyboardButton(text='/stats')], [KeyboardButton(text='/admin'),
-         KeyboardButton(text='/start')] ]
+        [KeyboardButton(text='/send_post'), KeyboardButton(text='/mode'), KeyboardButton(text='/redakt_post')],
+        [KeyboardButton(text='/stats')], 
+        [KeyboardButton(text='/admin'), KeyboardButton(text='/start')] ]
     
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
