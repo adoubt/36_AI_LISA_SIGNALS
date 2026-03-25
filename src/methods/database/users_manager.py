@@ -34,6 +34,7 @@ class UsersDatabase:
                                                         language TEXT DEFAULT NULL,
                                                         requested_time TIMESTAMP,
                                                         card_number TEXT DEFAULT NULL,
+                                                        is_banned INTEGER DEFAULT 0,
                                                         email TEXT DEFAULT NULL,
                                                         amount_requested REAL DEFAULT NULL)''') as cursor:
                 pass
@@ -213,3 +214,14 @@ class UsersDatabase:
             """
             await db.execute(query, (user_id,))
             await db.commit()
+    @classmethod
+    async def ban(cls, user_id: int):
+        await cls.set_value(user_id, "is_banned", 1)
+
+    @classmethod
+    async def unban(cls, user_id: int):
+        await cls.set_value(user_id, "is_banned", 0)
+
+    @classmethod
+    async def is_banned(cls, user_id: int) -> bool:
+        return (await cls.get_value(user_id, "is_banned")) == 1

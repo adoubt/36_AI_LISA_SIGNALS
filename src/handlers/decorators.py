@@ -1,5 +1,6 @@
 from src.methods.database.users_manager import UsersDatabase
 from aiogram.types import Message, CallbackQuery
+from functools import wraps
 
 from loguru import logger
 from src.misc import bot, bot_id, CHANNEL_LINK,LOG_CHANNEL_ID
@@ -91,3 +92,19 @@ def is_admin(function):
         return
 
     return _is_admin
+
+
+
+def is_not_banned(function):
+    @wraps(function)
+    async def wrapper(event: Message, **kwargs):
+
+        user_id = event.from_user.id
+
+        if await UsersDatabase.is_banned(user_id):
+            await event.answer("You are blocked.")
+            return
+
+        return await function(event, **kwargs)
+
+    return wrapper

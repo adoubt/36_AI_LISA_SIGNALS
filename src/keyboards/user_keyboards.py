@@ -27,7 +27,7 @@ def get_start_kb(requested:int) -> ReplyKeyboardMarkup:
 
 def get_admin_kb() -> ReplyKeyboardMarkup:
     buttons = [
-        [KeyboardButton(text='/ad'),
+        [KeyboardButton(text='/send_post'),KeyboardButton(text='/mode'),
         KeyboardButton(text='/stats')], [KeyboardButton(text='/admin'),
          KeyboardButton(text='/start')] ]
     
@@ -112,3 +112,7 @@ def get_receive_kb() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="💰 Ganar aún más dinero 💰", callback_data ='earn_more')]])
     return ikb
 
+def get_back_to_admin_kb() -> InlineKeyboardMarkup:
+    ikb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Вернуться в админку", callback_data ='back_to_admin')]])
+    return ikb

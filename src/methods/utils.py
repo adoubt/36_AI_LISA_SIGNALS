@@ -2,14 +2,15 @@ import urllib.parse
 import re
 import asyncio
 from aiogram.filters import Filter
-from aiogram.types import Message, ContentType
+from aiogram.types import Message, ContentType, InputMediaPhoto, InputMediaVideo
 from aiogram import Bot
 from src.misc import bot,CHANNEL_ID,LOG_CHANNEL_LINK, LOG_CHANNEL_ID
 from src.methods.database.users_manager import UsersDatabase
 from src.methods.database.config_manager import ConfigDatabase
+from src.methods.database.ads_manager import AdsDatabase
 from loguru import logger
-
-
+from typing import Union, List
+from time import time
 async def get_or_set_photo_id(key: str, file_path: str, message: Message):
     photo_id = await ConfigDatabase.get_value(key)
 
@@ -75,25 +76,96 @@ class AdStateFilter(Filter):
         return state == self.required_state 
     
 
-async def send_ad_message(user_id, message: Message):
-    """ Отправляет сообщение конкретному пользователю """
+async def send_ad_message(user_id, content: Union[Message, List[Message]]):
+    
     try:
+        # --- медиагруппа ---
+        if isinstance(content, list):
+            
+            caption = None
+
+            for msg in content:
+                if msg.html_text:
+                    caption = msg.html_text
+                    break
+            media = []
+            for i, msg in enumerate(content):
+                cap = caption if i == 0 else None
+
+                if msg.photo:
+                    media.append(InputMediaPhoto(
+                        media=msg.photo[-1].file_id,
+                        caption=cap,
+                        parse_mode="HTML"
+                    ))
+
+                elif msg.video:
+                    media.append(InputMediaVideo(
+                        media=msg.video.file_id,
+                        caption=cap,
+                        parse_mode="HTML"
+                    ))
+
+            if media:
+                msgs = await bot.send_media_group(user_id, media,)
+                return [m.message_id for m in msgs]
+
+            return False
+
+        # --- одиночное сообщение ---
+        message = content
+
         if message.content_type == ContentType.TEXT:
-            await bot.send_message(user_id, message.html_text, parse_mode="HTML")
-        elif message.content_type == ContentType.PHOTO:
-            await bot.send_photo(user_id, message.photo[-1].file_id, caption=message.html_text, parse_mode="HTML")
-        elif message.content_type == ContentType.VIDEO:
-            await bot.send_video(user_id, message.video.file_id, caption=message.html_text, parse_mode="HTML")
-        elif message.content_type == ContentType.ANIMATION:
-            await bot.send_animation(user_id, message.animation.file_id, caption=message.html_text, parse_mode="HTML")
+            msg = await bot.send_message(
+                user_id,
+                message.html_text,
+                parse_mode="HTML"
+            )
+            return msg.message_id
         
-        return True
+        elif message.content_type == ContentType.PHOTO:
+            msg = await bot.send_photo(
+                user_id,
+                message.photo[-1].file_id,
+                caption=message.html_text,
+                parse_mode="HTML"
+            )
+            return msg.message_id
+        
+        elif message.content_type == ContentType.VIDEO:
+            msg = await bot.send_video(
+                user_id,
+                message.video.file_id,
+                caption=message.html_text,
+                parse_mode="HTML"
+            )
+            return msg.message_id
+        
+        elif message.content_type == ContentType.ANIMATION:
+            msg = await bot.send_animation(
+                user_id,
+                message.animation.file_id,
+                caption=message.html_text,
+                parse_mode="HTML"
+            )
+            return msg.message_id
+        
+
     except Exception as e:
         logger.error(f"Ошибка при отправке {user_id}: {e}")
         return False
 
-async def handle_send_ad(message: Message, admin: int):
+async def handle_send_ad(content, admin: int):
     state = await ConfigDatabase.get_value("ad_state")
+
+    message = content if isinstance(content, Message) else content[0]
+
+    if state == "off":
+        await message.answer("Рассылка сейчас выключена! Переключить режим рассылки можно здесь /mode")
+        return
+
+    ad_id = int(time())
+
     users = {
         "all": await UsersDatabase.get_all(),
         "test": [[admin]],
@@ -103,18 +175,37 @@ async def handle_send_ad(message: Message, admin: int):
     sent_count = 0
 
     for user in users:
+        if await UsersDatabase.is_banned(user[0]):
+            continue
         try:
-            success = await send_ad_message(user[0], message)
-            if success:
-                sent_count += 1
+            msg_ids = await send_ad_message(user[0], content)
+
+            if not msg_ids:
+                continue
+
+            sent_count += 1
+
+            # --- сохранение ---
+            if isinstance(msg_ids, list):
+                await AdsDatabase.add_many(ad_id, user[0], msg_ids)
+            else:
+                await AdsDatabase.add(ad_id, user[0], msg_ids)
+
         except Exception:
             pass
 
         await asyncio.sleep(0.04)
 
     admin_name = await UsersDatabase.get_value(admin, 'username')
-    msg = f"📢 Messages sent: <b>{sent_count}</b>\nSender: @{admin_name} {admin}\nstate: <b>{state}<b>"
 
+    msg = (
+        f"📢 Messages sent: <b>{sent_count}</b>\n"
+        f"Sender: @{admin_name} {admin}\n"
+        f"state: <b>{state}</b>\n"
+        f"ad_id: <code>{ad_id}</code>"
+        "Чтобы удалить рассылку используй /redakt_post"
+    )
+    message.answer(msg)
     if LOG_CHANNEL_ID:
         try:
             await bot.send_message(
@@ -127,4 +218,3 @@ async def handle_send_ad(message: Message, admin: int):
             logger.warning(f"LOG_CHANNEL_ID error: {e}")
 
     logger.success(msg)
-
