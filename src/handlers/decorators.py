@@ -26,21 +26,16 @@ def new_user_handler(function):
         if (await UsersDatabase.get_user(user_id)) == -1:
             username = message.from_user.username
             language = message.from_user.language_code
-            referr = message.text.split()[1] if len(message.text.split()) > 1 else None
+            
             
             await UsersDatabase.create_user(
                 user_id=user_id,
                 username=username,
                 language=language,
-                referr=referr
+                
             )
 
-            if referr and (await UsersDatabase.get_user(referr) != -1): 
-                await process_referral(referr)
-                referr_username = await UsersDatabase.get_value(referr, 'username')
-                msg = f"👤 @{username} {user_id} from @{referr_username} {referr}"
-            else: 
-                msg = f"👤 @{username} {user_id}"
+            msg = f"👤 @{username} {user_id}"
 
             # защита от None + любых ошибок отправки
             if LOG_CHANNEL_ID:
