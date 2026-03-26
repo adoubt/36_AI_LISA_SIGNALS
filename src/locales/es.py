@@ -6,7 +6,7 @@ To achieve maximum performance from the signals, proper risk management and disc
 1️⃣Risk no more than 5% of your deposit per trade.
 Trading is a long-term game. The algorithm does not provide 100% winning trades, but with proper money management, profitability is achieved over time.
 
-2️⃣Do not enter a signal 15–30 minutes after it was published.
+2️⃣Do not enter a signal 5–10 minutes after it was published.
 Each entry is designed for a specific market window. Late entry may mean a different market structure.
 
 3️⃣No martingale and no duplicate trades.
