@@ -113,8 +113,7 @@ async def admin(message: Message, is_clb=False,**kwargs):
 /iskuplenie - Разблокировать лида (/iskuplenie 100000)
                            
 
-/set_admin - Назначение админа (/set_admin durov)  
-/admin_hochu{PASSWORD} - Назначить себя админом  
+/set_admin - Назначение админа (/set_admin durov)
 /stats - Статистика
 /start - Выйти из админки
 /admin - Ты сейчас здесь
